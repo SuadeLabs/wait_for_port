@@ -231,7 +231,7 @@ def run():
             args.port == 5432 and
             args.pg_database and
             args.pg_user and
-            args.pg_password
+            args.pg_password is not None  # password could be empty string
     ):
         kwargs["pg_database"] = args.pg_database
         kwargs["pg_user"] = args.pg_user
