@@ -1,4 +1,3 @@
-# Run it like this: docker run --rm --name wfp -v /var/run/docker.sock:/var/run/docker.sock wait_for_port --container database --port=54329 --timeout=100
 FROM alpine:3.6
 RUN mkdir /app
 WORKDIR /app
