@@ -227,15 +227,18 @@ def run():
         getattr(logging, args.loglevel))
 
     kwargs = {}
-    if (
-            args.port == 5432 and
-            args.pg_database and
-            args.pg_user and
-            args.pg_password is not None  # password could be empty string
-    ):
-        kwargs["pg_database"] = args.pg_database
-        kwargs["pg_user"] = args.pg_user
-        kwargs["pg_password"] = args.pg_password
+    if args.port == 5432:
+        kwargs = {
+            "pg_database": "postgres",
+            "pg_user": "postgres",
+            "pg_password": ""
+        }
+        if args.pg_database:
+            kwargs["pg_database"] = args.pg_database
+        if args.pg_user:
+            kwargs["pg_user"] = args.pg_user
+        if args.pg_password:
+            kwargs["pg_password"] = args.pg_password
 
     try:
         if not wfp.wait_for_port(**kwargs):
