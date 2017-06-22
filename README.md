@@ -47,9 +47,11 @@ containers:
   dependentcontainer:
     build: {...}
     image: company.org/dependentcontainer
-    link:
-      - slowstartingcontainer
-    run: {...}
+    run:
+      ...
+      link:
+        - slowstartingcontainer
+      ...
 
 hooks:
   slowstartingcontainer:
