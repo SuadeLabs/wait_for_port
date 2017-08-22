@@ -47,14 +47,14 @@ class WaitForPort(object):
             "%(asctime)s %(levelname)s %(message)s"))
         self.logger.addHandler(strh)
 
-    def is_port_open(self):
-        # type: () -> bool
+    def is_port_open(self, **kwargs):
+        # type: (...) -> bool
         """placeholder function, overwritten at runtime in __init__"""
         self.logger.error("This method should be overwritten.")
         return False
 
     def is_port_open_default(self, **kwargs):
-        # type: () -> bool
+        # type: (...) -> bool
         """Run a default TCP port check."""
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((self.container_ip, self.port))
@@ -64,7 +64,7 @@ class WaitForPort(object):
         return result == 0
 
     def is_port_open_postgres(self, **kwargs):
-        # type: () -> bool
+        # type: (...) -> bool
         """
         Check is postgres is listening, and if it's really accepting
         connections."""
@@ -81,7 +81,7 @@ class WaitForPort(object):
             return False
 
     def wait_for_port(self, **kwargs):
-        # type: () -> bool
+        # type: (...) -> bool
         """
         Wait for the TCP port to become open. Fail fast (but only after 5
         seconds) if the container is not running."""
@@ -226,7 +226,7 @@ def run():
         args.interval,
         getattr(logging, args.loglevel))
 
-    kwargs = {}
+    kwargs = {}  # type: Dict[str, str]
     if args.port == 5432:
         kwargs = {
             "pg_database": "postgres",
