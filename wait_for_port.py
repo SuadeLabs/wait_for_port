@@ -8,7 +8,7 @@ import time
 import logging
 from docker import Client
 import psycopg2
-from typing import Any  # NOQA
+from typing import Any, Dict, Optional  # NOQA
 
 
 DEFAULT_INTERVAL = 0.2
@@ -24,7 +24,7 @@ class WaitForPort(object):
         self.configure_logger(loglevel)
 
         self.container = container
-        self.container_ip = "?"
+        self.container_ip = None  # type: Optional[str]
         self.port = port
         self.timeout = timeout
         self.increment = increment
