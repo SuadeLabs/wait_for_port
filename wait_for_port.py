@@ -29,12 +29,12 @@ class WaitForPort(object):
         self.timeout = timeout
         self.increment = increment
 
-        checks = {
-            5432: self.is_port_open_postgres
-        }
+        checks = {5432: self.is_port_open_postgres}
         setattr(
-            self, "is_port_open",
-            checks.get(self.port, self.is_port_open_default))
+            self,
+            "is_port_open",
+            checks.get(self.port, self.is_port_open_default),
+        )
 
     def configure_logger(self, loglevel):
         # type: (int) -> None
@@ -43,8 +43,9 @@ class WaitForPort(object):
         self.logger.setLevel(loglevel)
 
         strh = logging.StreamHandler(sys.stdout)
-        strh.setFormatter(logging.Formatter(
-            "%(asctime)s %(levelname)s %(message)s"))
+        strh.setFormatter(
+            logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+        )
         self.logger.addHandler(strh)
 
     def is_port_open(self, **kwargs):
@@ -74,7 +75,8 @@ class WaitForPort(object):
                 port=self.port,
                 database=kwargs["pg_database"],
                 user=kwargs["pg_user"],
-                password=kwargs["pg_password"])
+                password=kwargs["pg_password"],
+            )
             return True
         except Exception as exc:
             self.logger.debug("Caught exception: %s", repr(exc))
@@ -109,7 +111,8 @@ class WaitForPort(object):
             except Exception as exc:
                 msg = (
                     "Unable to find container or extract IP address, for "
-                    "container '{}': {}")
+                    "container '{}': {}"
+                )
                 print(msg.format(self.container, repr(exc)))
                 self.container_ip = None
 
@@ -153,63 +156,48 @@ def container_ipaddress(docker, container):
 def parse_args():
     # type: () -> argparse.Namespace
     """Parse cmdline args and return an argparse Namespace object."""
-    parser = argparse.ArgumentParser(description=(
-        "Tries to connect to a docker container's port until it succeeds or "
-        "times out. In addition, extra checks are made depending on the port: "
-        "5432: a postgres connection attempt is made."))
+    parser = argparse.ArgumentParser(
+        description=(
+            "Tries to connect to a docker container's port until it succeeds "
+            "or times out. In addition, extra checks are made depending on "
+            "the port: 5432: a postgres connection attempt is made."
+        )
+    )
 
     parser.add_argument(
-        "--container",
-        help="Container name",
-        type=str,
-        required=True)
+        "--container", help="Container name", type=str, required=True
+    )
 
     parser.add_argument(
         "--interval",
         help="Interval between checks, in seconds [default: {}]".format(
-            DEFAULT_INTERVAL),
+            DEFAULT_INTERVAL
+        ),
         type=float,
         required=False,
-        default=DEFAULT_INTERVAL)
+        default=DEFAULT_INTERVAL,
+    )
 
-    parser.add_argument(
-        "--pg_user",
-        help="Postgres username",
-        type=str)
+    parser.add_argument("--pg_user", help="Postgres username", type=str)
 
-    parser.add_argument(
-        "--pg_password",
-        help="Postgres password",
-        type=str)
+    parser.add_argument("--pg_password", help="Postgres password", type=str)
 
-    parser.add_argument(
-        "--pg_database",
-        help="Postgres database",
-        type=str)
+    parser.add_argument("--pg_database", help="Postgres database", type=str)
 
     parser.add_argument(
         "--loglevel",
         help="Set the log level [default: {}]".format(DEFAULT_LOGLEVEL),
-        choices=[
-            "FATAL",
-            "ERROR",
-            "WARN",
-            "INFO",
-            "DEBUG"
-        ],
-        default=DEFAULT_LOGLEVEL)
+        choices=["FATAL", "ERROR", "WARN", "INFO", "DEBUG"],
+        default=DEFAULT_LOGLEVEL,
+    )
 
     parser.add_argument(
-        "--port",
-        help="TCP port to check",
-        type=int,
-        required=True)
+        "--port", help="TCP port to check", type=int, required=True
+    )
 
     parser.add_argument(
-        "--timeout",
-        help="timeout in seconds",
-        type=int,
-        required=True)
+        "--timeout", help="timeout in seconds", type=int, required=True
+    )
 
     return parser.parse_args()
 
@@ -224,14 +212,15 @@ def run():
         args.port,
         args.timeout,
         args.interval,
-        getattr(logging, args.loglevel))
+        getattr(logging, args.loglevel),
+    )
 
     kwargs = {}  # type: Dict[str, str]
     if args.port == 5432:
         kwargs = {
             "pg_database": "postgres",
             "pg_user": "postgres",
-            "pg_password": ""
+            "pg_password": "",
         }
         if args.pg_database:
             kwargs["pg_database"] = args.pg_database
