@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import socket
@@ -8,7 +8,7 @@ import time
 import logging
 from docker import Client
 import psycopg2
-from typing import Any, Dict, Optional  # NOQA
+from typing import Any, Dict, Optional  # noqa: F401
 
 
 DEFAULT_INTERVAL = 0.2
@@ -76,7 +76,7 @@ class WaitForPort(object):
                 user=kwargs["pg_user"],
                 password=kwargs["pg_password"])
             return True
-        except Exception, exc:
+        except Exception as exc:
             self.logger.debug("Caught exception: %s", repr(exc))
             return False
 
@@ -87,8 +87,8 @@ class WaitForPort(object):
         seconds) if the container is not running."""
         try:
             docker = Client()  # type: Client
-        except Exception, exc:
-            print "Unable to connect to Docker daemon: {}".format(exc)
+        except Exception as exc:
+            print("Unable to connect to Docker daemon: {}".format(exc))
             return False
 
         no_newline_print("Waiting for {}".format(self.container))
@@ -99,29 +99,29 @@ class WaitForPort(object):
 
             # tick > timeout/2, to prevent a race where a container is still
             # starting
-            if (tick > 5) and not is_container_running(docker, self.container):
-                print "failed!"
-                print "Container not running: {}".format(self.container)
+            if tick > 5 and not is_container_running(docker, self.container):
+                print("failed!")
+                print("Container not running: {}".format(self.container))
                 return False
 
             try:
                 self.container_ip = container_ipaddress(docker, self.container)
-            except Exception, exc:
+            except Exception as exc:
                 msg = (
                     "Unable to find container or extract IP address, for "
                     "container '{}': {}")
-                print msg.format(self.container, repr(exc))
+                print(msg.format(self.container, repr(exc)))
                 self.container_ip = None
 
             if self.container_ip and self.is_port_open(**kwargs):
-                print "ready."
+                print("ready.")
                 return True
 
             tick += self.increment
             time.sleep(self.increment)
 
-        print "failed!"
-        print "Timed out waiting for port {} to open.".format(self.port)
+        print("failed!")
+        print("Timed out waiting for port {} to open.".format(self.port))
         return False
 
 
